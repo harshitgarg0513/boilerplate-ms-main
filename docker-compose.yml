@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  microservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${MS_PORT}:50051"
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: rebuild
+          path: ./apps/microservice/src
+          target: /app
+          ignore:
+            - node_modules/
+    command: ["node", "dist/apps/microservice/src/main.js"]
+    networks:
+      - ms-network
+
+  apigateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APIGATEWAY_PORT}:3000"
+    env_file:
+      - .env
+    depends_on:
+      - microservice
+    develop:
+      watch:
+        - action: rebuild
+          path: ./apps/apigateway/src
+          target: /app
+          ignore:
+            - node_modules/
+    command: ["node", "dist/apps/apigateway/src/main.js"]
+    networks:
+      - ms-network
+
+networks:
+  ms-network:

@@ -1,0 +1,16 @@
+- will have to seperate apigateway common code as standalone npm lib
+- will have to  seperate grpc client common code as standalone npm lib
+- any microservice can install above npm libs and use in their own apps
+- in this case there will be fix IP for all the microservices in the grpc client lib
+- So that all the IPs overhead will be reduced as it will be fixed in the grpc client lib
+- later we will use  kubernetes to deploy the microservices in the cluster
+- then will be using (Prometheus or Grafana)
+
+- pagination (done)
+- create custom exceptions (Done)
+- pagination helper (Done)
+- swagger implementation
+- auth service new microservice
+- solution to import all the entities in the datasource configuration
+- logger for exception
+- logger for request response in microservice
