@@ -1,1 +1,1 @@
-export { AuthGuard } from '@beatroute/auth';
+export { AuthGuard } from '@beatroute-ms/auth';

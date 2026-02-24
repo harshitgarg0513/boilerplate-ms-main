@@ -1,1 +1,1 @@
-export { GetIdentity, type Identity } from '@beatroute/auth';
+export { GetIdentity, type Identity } from '@beatroute-ms/auth';

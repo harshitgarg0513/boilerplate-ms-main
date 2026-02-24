@@ -1,2 +1,2 @@
-export { RoleAccessGuard } from '@beatroute/auth';
+export { RoleAccessGuard } from '@beatroute-ms/auth';
 

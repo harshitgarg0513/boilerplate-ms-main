@@ -1,4 +1,4 @@
-import { GatewayRpcToHttpExceptionFilter } from '@harshitgarg0513/error-handling';
+import { GatewayRpcToHttpExceptionFilter } from '@beatroute-ms/error-handling';
 
 describe('GatewayRpcToHttpExceptionFilter', () => {
   it('should be defined', () => {

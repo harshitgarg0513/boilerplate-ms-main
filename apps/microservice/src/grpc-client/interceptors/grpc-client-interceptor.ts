@@ -11,7 +11,10 @@ export class GrpcClientInterceptor {
     return new InterceptingCall(nextCall(options), {
       start: (metadata, listener, next) => {
         if (jwtToken) {
-          const token = jwtToken.startsWith('Bearer ') ? jwtToken.slice(7).trim() : jwtToken;
+          const token = jwtToken.startsWith('Bearer ')
+            ? jwtToken.slice(7).trim()
+            : jwtToken;
+
           metadata.add('authorization', token);
         }
         next(metadata, listener);

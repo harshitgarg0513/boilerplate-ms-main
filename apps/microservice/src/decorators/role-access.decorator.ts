@@ -1,1 +1,1 @@
-export { RoleAccess, ALLOWED_ROLES_KEY } from '@beatroute/auth';
+export { RoleAccess, ALLOWED_ROLES_KEY } from '@beatroute-ms/auth';
