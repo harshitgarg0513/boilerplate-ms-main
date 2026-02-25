@@ -1,0 +1,442 @@
+{
+	"info": {
+		"_postman_id": "beatroute-integration-tests",
+		"name": "BeatRoute MS Integration - HTTP & gRPC",
+		"description": "Complete integration test collection for beatroute-shared-platform packages in boilerplate-ms-main.\n\nIncludes:\n- HTTP endpoints via API Gateway (port 3000)\n- Auth success, no-role denial, bad-signature denial\n- Health checks\n- CRUD operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{VALID_ADMIN_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "✅ Success Cases (Valid Admin Token)",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/health/check",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"health",
+								"check"
+							]
+						},
+						"description": "Public health endpoint - no auth required"
+					},
+					"response": []
+				},
+				{
+					"name": "Example - Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-request-context",
+								"value": "{\"requestId\":\"postman-create-1\",\"source\":\"postman\"}",
+								"description": "Optional request context for distributed tracing"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Postman Test Item\",\n  \"description\": \"Created via Postman with valid admin token\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/example/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"create"
+							]
+						},
+						"description": "Create example with valid admin token (role=6) - should succeed"
+					},
+					"response": []
+				},
+				{
+					"name": "Example - Index (List)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"index"
+							]
+						},
+						"description": "List all examples with valid admin token - should succeed"
+					},
+					"response": []
+				},
+				{
+					"name": "Example - View by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/view1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"view1"
+							]
+						},
+						"description": "View example by ID with valid admin token - should succeed"
+					},
+					"response": []
+				},
+				{
+					"name": "Example - Update",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"description\": \"Updated via Postman\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/example/update1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"update1"
+							]
+						},
+						"description": "Update example with valid admin token - should succeed"
+					},
+					"response": []
+				},
+				{
+					"name": "Example - Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/delete1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"delete1"
+							]
+						},
+						"description": "Delete example with valid admin token - should succeed"
+					},
+					"response": []
+				}
+			],
+			"description": "All requests use valid admin JWT (role=6) and should return 200/201 success"
+		},
+		{
+			"name": "❌ No-Role Token (Forbidden)",
+			"item": [
+				{
+					"name": "Create - ACCESS DENIED",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{NO_ROLE_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Should Fail\",\n  \"description\": \"No role in token\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/example/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"create"
+							]
+						},
+						"description": "Token has valid signature but missing role field.\n\n**Expected:** 403 Forbidden with \"Access denied!\" message"
+					},
+					"response": []
+				},
+				{
+					"name": "Index - ACCESS DENIED",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{NO_ROLE_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"index"
+							]
+						},
+						"description": "Token has valid signature but missing role field.\n\n**Expected:** 403 Forbidden with \"Access denied!\" message"
+					},
+					"response": []
+				},
+				{
+					"name": "View - ACCESS DENIED",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{NO_ROLE_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/view1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"view1"
+							]
+						},
+						"description": "Token has valid signature but missing role field.\n\n**Expected:** 403 Forbidden with \"Access denied!\" message"
+					},
+					"response": []
+				}
+			],
+			"description": "Tests with valid JWT signature but missing `role` field. Should trigger RoleAccessGuard denial (403 Forbidden)."
+		},
+		{
+			"name": "❌ Bad Signature Token (Unauthorized)",
+			"item": [
+				{
+					"name": "Create - UNAUTHORIZED",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BAD_SIGNATURE_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Should Fail\",\n  \"description\": \"Wrong secret\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/example/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"create"
+							]
+						},
+						"description": "Token signed with wrong secret - JWT verification fails.\n\n**Expected:** 401 Unauthorized with \"Unauthorized!\" message"
+					},
+					"response": []
+				},
+				{
+					"name": "Index - UNAUTHORIZED",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{BAD_SIGNATURE_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/example/index",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"index"
+							]
+						},
+						"description": "Token signed with wrong secret - JWT verification fails.\n\n**Expected:** 401 Unauthorized with \"Unauthorized!\" message"
+					},
+					"response": []
+				}
+			],
+			"description": "Tests with JWT signed using wrong secret. Should trigger AuthGuard denial (401 Unauthorized)."
+		},
+		{
+			"name": "❌ No Token (Unauthorized)",
+			"item": [
+				{
+					"name": "Create - NO TOKEN",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Should Fail\",\n  \"description\": \"No auth header\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/example/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"example",
+								"create"
+							]
+						},
+						"description": "No Authorization header provided.\n\n**Expected:** 401 Unauthorized"
+					},
+					"response": []
+				}
+			],
+			"description": "Tests without any Authorization header - should be rejected by AuthGuard."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "VALID_ADMIN_TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdCIsInJvbGUiOjYsImlhdCI6MTc3MTk4NjE5NywiZXhwIjoxNzcxOTg5Nzk3fQ.2UiwXxgXl39ytr3OFU5NISV6km6uFZSa7GV666bA6ag",
+			"type": "string",
+			"description": "Valid JWT with role=6 (ADMIN), signed with correct secret"
+		},
+		{
+			"key": "NO_ROLE_TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoibm8tcm9sZSIsImlhdCI6MTc3MTk4NjIwMSwiZXhwIjoxNzcyMDcyNjAxfQ.XAO_15N7CTdAbcf6O48EgRxqALGVO7eden9eYaLCWHM",
+			"type": "string",
+			"description": "Valid signature but missing 'role' field - triggers RoleAccessGuard denial"
+		},
+		{
+			"key": "BAD_SIGNATURE_TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoiYmFkIiwicm9sZSI6NiwiaWF0IjoxNzcxOTg2MjAzLCJleHAiOjE3NzIwNzI2MDN9.W4R2g4PiciaHff5LG0MUQvAhoZHjg_7CtwXvr-fNBK8",
+			"type": "string",
+			"description": "JWT signed with WRONG_SECRET - triggers AuthGuard denial (invalid signature)"
+		}
+	]
+}

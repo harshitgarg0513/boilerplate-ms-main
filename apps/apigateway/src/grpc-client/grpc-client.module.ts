@@ -29,9 +29,9 @@ import { AuthGrpcClientService } from './auth/auth-grpc-client.service';
           options: {
             url: configService.get<string>('GRPC_AUTH_MS_URL'),
             package: BEATROUTE_AUTH_PACKAGE_NAME,
-            protoPath: resolve(__dirname, '../proto/beatroute/auth/auth.proto'),
+            protoPath: resolve(process.cwd(), 'proto/beatroute/auth/auth.proto'),
             loader: {
-              includeDirs: [resolve(__dirname, '../proto')],
+              includeDirs: [resolve(process.cwd(), 'proto')],
             },
             channelOptions: {
               interceptors: [
@@ -56,9 +56,9 @@ import { AuthGrpcClientService } from './auth/auth-grpc-client.service';
           options: {
             url: configService.get<string>('GRPC_DMS_MS_URL'),
             package: BEATROUTE_DMS_PACKAGE_NAME,
-            protoPath: resolve(__dirname, '../proto/beatroute/dms/example.proto'),
+            protoPath: resolve(process.cwd(), 'proto/beatroute/dms/example.proto'),
             loader: {
-              includeDirs: [resolve(__dirname, '../proto')],
+              includeDirs: [resolve(process.cwd(), 'proto')],
             },
             channelOptions: {
               interceptors: [
@@ -83,9 +83,9 @@ import { AuthGrpcClientService } from './auth/auth-grpc-client.service';
           options: {
             url: configService.get<string>('GRPC_DMS_MS_URL'),
             package: BEATROUTE_DMS_PACKAGE_NAME,
-            protoPath: resolve(__dirname, '../proto/beatroute/dms/health.proto'),
+            protoPath: resolve(process.cwd(), 'proto/beatroute/dms/health.proto'),
             loader: {
-              includeDirs: [resolve(__dirname, '../proto')],
+              includeDirs: [resolve(process.cwd(), 'proto')],
             },
             channelOptions: {
               interceptors: [

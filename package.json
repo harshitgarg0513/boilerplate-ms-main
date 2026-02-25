@@ -12,8 +12,8 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:dev:ms": "npm run start:dev microservice",
-    "start:dev:apigateway": "npm run start:dev apigateway",
+    "start:dev:ms": "nest start --watch microservice",
+    "start:dev:apigateway": "nest start --watch apigateway",
     "start:debug": "nest start --debug --watch",
     "start:prod:ms": "node dist/apps/microservice/src/main",
     "start:prod:apigateway": "node dist/apps/apigateway/src/main",
@@ -29,6 +29,7 @@
   "dependencies": {
     "@beatroute-ms/auth": "^0.1.0",
     "@beatroute-ms/error-handling": "^0.1.0",
+    "@beatroute-ms/logger": "^0.1.0",
     "@beatroute-ms/request-context": "^0.1.0",
     "@grpc/grpc-js": "^1.11.3",
     "@grpc/proto-loader": "^0.7.13",

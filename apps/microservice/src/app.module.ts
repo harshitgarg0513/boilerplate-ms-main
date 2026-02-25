@@ -38,7 +38,8 @@ import { DatabaseModule } from './config/database.module';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: SharedAuthGuard,
+      useFactory: (jwtService: JwtService) => new SharedAuthGuard(jwtService),
+      inject: [JwtService],
     },
     {
       provide: APP_GUARD,
