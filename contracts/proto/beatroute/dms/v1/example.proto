@@ -18,17 +18,17 @@ message ExampleRequestDto {
 }
 
 message Example {
-  int32 id = 1;
+  string id = 1;
   string name = 2;
   string description = 3;
 }
 
 message ExampleViewRequestDto {
-  int32 id = 1;
+  string id = 1;
 }
 
 message ExampleDeleteRequestDto {
-  int32 id = 1;
+  string id = 1;
 }
 
 message ExampleListRequestDto {
