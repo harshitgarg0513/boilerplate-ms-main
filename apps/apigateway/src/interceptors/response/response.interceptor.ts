@@ -17,7 +17,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response> {
 
     return next.handle().pipe(
       map((data) => {
-        if(data && data.pagination) {
+        if(data.pagination) {
           pagination = data.pagination;
           delete data.pagination;
         }
@@ -26,7 +26,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response> {
           success: true,
           status: statusCode,
           message: 'Success',
-          data: data || null,
+          data,
           dataError: null,
           pagination,
         };

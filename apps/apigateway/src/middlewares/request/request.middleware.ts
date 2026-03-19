@@ -26,18 +26,10 @@ export class RequestMiddleware implements NestMiddleware {
     }
 
     if(token) {
-      try {
-        // Try to call auth service if available
-        const authenticateResponse: AuthenticateResponseDto = await (this.authGrpcClientService.authenticate(token).toPromise());
-        req['jwtToken'] = authenticateResponse.jwtToken;
-      } catch (error) {
-        // If auth service is not available, use the token directly from the header
-        // This allows the microservice to validate the JWT with its own JwtService
-        req['jwtToken'] = token;
-      }
+      const authenticateResponse: AuthenticateResponseDto = await (this.authGrpcClientService.authenticate(token).toPromise());
+  
+      req['jwtToken'] = authenticateResponse.jwtToken;
     }
-    // ensure xRequestContext is present on the request object for interceptors
-    if (!req['xRequestContext']) req['xRequestContext'] = JSON.stringify({ requestId: `req_${Date.now()}` });
     next();
   }
 }

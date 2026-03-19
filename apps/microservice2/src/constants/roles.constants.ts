@@ -1,0 +1,12 @@
+export {
+  ROLE_PROMOTER,
+  ROLE_SR,
+  ROLE_DISTRIBUTOR,
+  ROLE_TSM,
+  ROLE_SM,
+  ROLE_ADMIN,
+  ROLE_VW_ADMIN,
+  ROLE_RETAILER,
+  ROLE_VW_SUB_ADMIN,
+  ROLE_SUB_ADMIN,
+} from '@beatroute-ms/auth';

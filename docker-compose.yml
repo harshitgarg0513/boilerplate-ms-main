@@ -20,6 +20,27 @@ services:
     networks:
       - ms-network
 
+  microservice2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${MS2_PORT}:50052"
+    env_file:
+      - .env
+    depends_on:
+      - microservice
+    develop:
+      watch:
+        - action: rebuild
+          path: ./apps/microservice2/src
+          target: /app
+          ignore:
+            - node_modules/
+    command: ["node", "dist/apps/microservice2/src/main.js"]
+    networks:
+      - ms-network
+
   apigateway:
     build:
       context: .
@@ -30,6 +51,7 @@ services:
       - .env
     depends_on:
       - microservice
+      - microservice2
     develop:
       watch:
         - action: rebuild

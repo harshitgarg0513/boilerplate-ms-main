@@ -10,17 +10,7 @@ export class GrpcClientInterceptor {
     const jwtToken = this.request['jwtToken'];
     return new InterceptingCall(nextCall(options), {
       start: (metadata, listener, next) => {
-        if (jwtToken) {
-          // Send raw token in gRPC metadata (AuthGuard will accept both formats)
-          const token = jwtToken.startsWith('Bearer ') ? jwtToken.slice(7).trim() : jwtToken;
-          metadata.add('authorization', token);
-        }
-        // Forward x-request-context (stringified JSON or plain string) if present
-        const xRequestContext = this.request['xRequestContext'] || this.request.headers?.['x-request-context'];
-        if (xRequestContext) {
-          const value = typeof xRequestContext === 'string' ? xRequestContext : JSON.stringify(xRequestContext);
-          metadata.add('x-request-context', value);
-        }
+        metadata.add('authorization', `${jwtToken}`);
         next(metadata, listener);
       },
     });

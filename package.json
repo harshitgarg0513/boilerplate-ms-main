@@ -8,14 +8,17 @@
   "scripts": {
     "build": "nest build",
     "build:ms": "nest build microservice",
+    "build:ms2": "nest build microservice2",
     "build:apigateway": "nest build apigateway",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:dev:ms": "nest start --watch microservice",
+    "start:dev:ms2": "nest start --watch microservice2",
     "start:dev:apigateway": "nest start --watch apigateway",
     "start:debug": "nest start --debug --watch",
     "start:prod:ms": "node dist/apps/microservice/src/main",
+    "start:prod:ms2": "node dist/apps/microservice2/src/main",
     "start:prod:apigateway": "node dist/apps/apigateway/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -24,10 +27,13 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/microservice/test/jest-e2e.json",
     "protobuf:linux": "protoc --experimental_allow_proto3_optional --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./ --ts_proto_opt=nestJs=true ./proto/**/**/*.proto",
-    "protobuf:win": "protoc --experimental_allow_proto3_optional --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=./ --ts_proto_opt=nestJs=true ./proto/beatroute/dms/*.proto"
+    "protobuf:win": "protoc --experimental_allow_proto3_optional --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=./ --ts_proto_opt=nestJs=true ./proto/beatroute/dms/*.proto",
+    "contracts:generate": "node contracts/scripts/generate-proto.js",
+    "contracts:check": "node contracts/scripts/compatibility-check.js",
+    "contracts:validate": "npm run contracts:generate && npm run contracts:check"
   },
   "dependencies": {
-    "@beatroute-ms/auth": "^0.1.0",
+    "@beatroute-ms/auth": "0.3.0",
     "@beatroute-ms/error-handling": "^0.1.0",
     "@beatroute-ms/logger": "^0.1.0",
     "@beatroute-ms/request-context": "^0.1.0",

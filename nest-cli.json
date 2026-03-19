@@ -20,8 +20,24 @@
         "tsConfigPath": "apps/microservice/tsconfig.app.json",
         "assets": [
           {
-            "include": "proto/**/*.proto",
-            "outDir": "dist/apps/microservice/proto"
+            "include": "../../contracts/proto/**/*.proto",
+            "outDir": "dist/contracts/proto"
+          }
+        ],
+        "watchAssets": true
+      }
+    },
+    "microservice2": {
+      "type": "application",
+      "root": "apps/microservice2",
+      "entryFile": "main",
+      "sourceRoot": "apps/microservice2/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/microservice2/tsconfig.app.json",
+        "assets": [
+          {
+            "include": "../../contracts/proto/**/*.proto",
+            "outDir": "dist/contracts/proto"
           }
         ],
         "watchAssets": true
@@ -36,8 +52,8 @@
         "tsConfigPath": "apps/apigateway/tsconfig.app.json",
         "assets": [
           {
-            "include": "proto/**/*.proto",
-            "outDir": "dist/apps/apigateway/proto"
+            "include": "../../contracts/proto/**/*.proto",
+            "outDir": "dist/contracts/proto"
           }
         ],
         "watchAssets": true

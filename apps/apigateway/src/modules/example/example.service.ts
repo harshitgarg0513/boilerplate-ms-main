@@ -23,6 +23,6 @@ export class ExampleService {
   }
 
   remove(id: number) {
-    return this.exampleClientService.deleteExample(id);
+    this.exampleClientService.deleteExample(id);
   }
 }

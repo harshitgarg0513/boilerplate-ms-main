@@ -63,18 +63,40 @@ https://www.geeksforgeeks.org/how-to-install-protocol-buffers-on-windows/
 # development
 
 $ npm run start:dev:ms
+$ npm run start:dev:ms2
 $ npm run start:dev:apigateway
 
 # build
 
 $ npm run build:ms
+$ npm run build:ms2
 $ npm run build:apigateway
 
 # production mode
 
 $ npm run start:prod:ms
+$ npm run start:prod:ms2
 $ npm run start:prod:apigateway
 ```
+
+## Contract Governance
+
+Shared contracts are maintained under `contracts/proto` with versioned package paths.
+
+```bash
+# generate TypeScript code from contracts/proto
+$ npm run contracts:generate
+
+# run breaking-change check against base branch
+$ npm run contracts:check
+
+# run generate + compatibility check together
+$ npm run contracts:validate
+```
+
+Current v1 protobuf package for DMS is:
+
+`beatroute.dms.v1`
 
 ## Test
 
