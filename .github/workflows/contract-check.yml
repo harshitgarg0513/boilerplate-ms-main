@@ -1,0 +1,39 @@
+name: Contract Check
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/proto/**/*.proto'
+      - 'contracts/scripts/**'
+      - 'package.json'
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate contracts
+        run: npm run contracts:generate
+
+      - name: Compatibility check
+        run: npm run contracts:check
+
+      - name: Run tests
+        run: npm test -- --runInBand

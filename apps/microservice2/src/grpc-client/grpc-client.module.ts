@@ -26,7 +26,7 @@ const DMS_V1_PACKAGE_NAME = 'beatroute.dms.v1';
         ) => ({
           transport: Transport.GRPC,
           options: {
-            url: configService.get<string>('GRPC_DMS_MS_URL'),
+            url: configService.get<string>('GRPC_DMS2_MS_URL') || configService.get<string>('GRPC_DMS_MS_URL'),
             package: DMS_V1_PACKAGE_NAME,
             protoPath: join(process.cwd(), 'contracts/proto/beatroute/dms/v1/example.proto'),
             loader: {
@@ -53,7 +53,7 @@ const DMS_V1_PACKAGE_NAME = 'beatroute.dms.v1';
         ) => ({
           transport: Transport.GRPC,
           options: {
-            url: configService.get<string>('GRPC_DMS_MS_URL'),
+            url: configService.get<string>('GRPC_DMS2_MS_URL') || configService.get<string>('GRPC_DMS_MS_URL'),
             package: DMS_V1_PACKAGE_NAME,
             protoPath: join(process.cwd(), 'contracts/proto/beatroute/dms/v1/health.proto'),
             loader: {

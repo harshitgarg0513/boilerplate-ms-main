@@ -25,8 +25,8 @@ export class ExampleGrpcClientService {
     return this.exampleService.view(request);
   }
 
-  getAllExamples(): Observable<ExampleResponseListDto> {
-    return this.exampleService.index({});
+  getAllExamples(page: number): Observable<ExampleResponseListDto> {
+    return this.exampleService.index({ page });
   }
 
   createExample(exampleRequestDto: ExampleRequestDto): Observable<Example> {

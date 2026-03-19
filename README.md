@@ -98,6 +98,43 @@ Current v1 protobuf package for DMS is:
 
 `beatroute.dms.v1`
 
+## Service-to-Service Demo
+
+`microservice2` is wired to call `microservice` over gRPC using `GRPC_DMS2_MS_URL`.
+
+Set in `.env`:
+
+```bash
+GRPC_DMS_MS_URL="microservice:50051"
+GRPC_DMS2_MS_URL="microservice:50051"
+```
+
+Run:
+
+```bash
+npm run start:dev:ms
+npm run start:dev:ms2
+```
+
+When you call `microservice2` `ExampleService.Index`, it forwards to `microservice` via gRPC.
+
+## Breaking-Change CI Demo
+
+Use this flow to prove governance blocks incompatible contract edits:
+
+1. Create a branch from `main`.
+2. Edit `contracts/proto/beatroute/dms/v1/example.proto` and change a field type or number, for example:
+  - `int32 id = 1;` -> `string id = 1;`
+3. Run:
+
+```bash
+npm run contracts:check
+```
+
+Expected result:
+- Script fails with `ERROR: Breaking change detected in protobuf contracts.`
+- In GitHub PR, the workflow fails and blocks merge.
+
 ## Test
 
 ```bash

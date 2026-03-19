@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateExampleDto } from './dto/update-example.dto';
 import { Example, ExampleRequestDto } from 'proto/beatroute/dms/example';
-import { GetIdentity } from '../../decorators/get-identity.decorator';
 import { UserIdentityService } from '../../services/user-identity.service';
 import { FilterDto } from './dto/example-filter.dto';
 import { PaginationHelper } from '../../helpers/pagination.helper';
-import { RouteService } from '../../core/route/services/route.service';
-import { SkuService } from '../../core/sku/services/sku.service';
-import { UserService } from '../../core/team/services/user.service';
+import { firstValueFrom } from 'rxjs';
+import { ExampleGrpcClientService } from '../../grpc-client/example/example-grpc-client.service';
 
 @Injectable()
 export class ExampleService {
@@ -29,8 +27,10 @@ export class ExampleService {
     },
   ];
 
-  
-  constructor(private readonly identityService: UserIdentityService) {}
+  constructor(
+    private readonly identityService: UserIdentityService,
+    private readonly exampleGrpcClientService: ExampleGrpcClientService,
+  ) {}
   create(createExampleDto: ExampleRequestDto) {
     const identity = this.identityService.getIdentity();
     console.log('user identity', identity);
@@ -45,6 +45,16 @@ export class ExampleService {
 
   async findAll(filterDto: FilterDto) {
     console.log('user', await this.identityService.getUser());
+
+    // Demonstrates service-to-service call: microservice2 -> microservice1.
+    const peerResponse = await firstValueFrom(
+      this.exampleGrpcClientService.getAllExamples(filterDto.page),
+    );
+
+    if (peerResponse?.examples?.length) {
+      return peerResponse;
+    }
+
     return {
       examples: this.dataList.slice((filterDto.page - 1) * filterDto.limit, filterDto.page * filterDto.limit),
       pagination: PaginationHelper.getPagination(filterDto.page, this.dataList.length, filterDto.limit),
