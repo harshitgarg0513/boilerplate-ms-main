@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'contracts/proto/**/*.proto'
+      - 'contracts/proto/buf.yaml'
       - 'contracts/scripts/**'
       - 'package.json'
 
@@ -21,10 +22,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
 
       - name: Compatibility check
         run: node contracts/scripts/compatibility-check.js
