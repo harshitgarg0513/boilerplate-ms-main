@@ -6,5 +6,5 @@ lint:
 
 breaking:
   use:
-    - FILE
+    - WIRE
     - WIRE_JSON

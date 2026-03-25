@@ -27,4 +27,8 @@ jobs:
         uses: bufbuild/buf-setup-action@v1
 
       - name: Compatibility check
-        run: node contracts/scripts/compatibility-check.js
+        run: |
+          echo "Running protobuf contract checks..."
+          node contracts/scripts/compatibility-check.js
+        env:
+          CONTRACT_BASE_REF: origin/${{ github.base_ref }}

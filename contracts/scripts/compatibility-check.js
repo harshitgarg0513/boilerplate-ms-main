@@ -38,20 +38,19 @@ function resolveBaseRef() {
   return '';
 }
 
-function getChangedProtoFiles(baseRef) {
-  const output = run(`git diff --name-only --diff-filter=ACMRT ${baseRef}...HEAD -- ${CONTRACT_ROOT}`);
-  return output
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.endsWith('.proto'));
-}
-
 function ensureBufInstalled() {
   const check = spawnSync('buf', ['--version'], {
     cwd: REPO_ROOT,
     stdio: 'pipe',
   });
   return check.status === 0;
+}
+
+function runBufLint() {
+  return spawnSync('buf', ['lint', CONTRACT_ROOT], {
+    cwd: REPO_ROOT,
+    stdio: 'inherit',
+  });
 }
 
 function runBufBreaking(baseRef) {
@@ -71,14 +70,15 @@ function main() {
 
   const baseRef = resolveBaseRef();
   if (!baseRef) {
-    console.info('Skipping contract compatibility check: no base ref available.');
-    process.exit(0);
+    console.error('Unable to resolve base ref for compatibility check.');
+    console.error('Set CONTRACT_BASE_REF (for CI use origin/<base-branch>, e.g. origin/main).');
+    process.exit(1);
   }
 
-  const changedFiles = getChangedProtoFiles(baseRef);
-  if (changedFiles.length === 0) {
-    console.info('No proto changes detected.');
-    process.exit(0);
+  const lintResult = runBufLint();
+  if (lintResult.status !== 0) {
+    console.error('ERROR: Protobuf lint failed.');
+    process.exit(lintResult.status || 1);
   }
 
   const result = runBufBreaking(baseRef);
