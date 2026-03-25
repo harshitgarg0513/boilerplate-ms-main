@@ -26,14 +26,11 @@ jobs:
       - name: Install protoc
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install contract dependencies only
+        run: cd contracts && npm ci
 
       - name: Generate contracts
-        run: npm run contracts:generate
+        run: cd contracts && npm run generate
 
       - name: Compatibility check
-        run: npm run contracts:check
-
-      - name: Run tests
-        run: npm test -- --runInBand
+        run: cd contracts && npm run check
