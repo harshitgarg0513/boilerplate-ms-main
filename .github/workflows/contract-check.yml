@@ -5,6 +5,8 @@ on:
     paths:
       - 'contracts/proto/**/*.proto'
       - 'contracts/proto/buf.yaml'
+      - 'contracts/package.json'
+      - 'contracts/package-lock.json'
       - 'contracts/scripts/**'
       - 'package.json'
 
@@ -25,6 +27,17 @@ jobs:
 
       - name: Setup buf
         uses: bufbuild/buf-setup-action@v1
+
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
+      - name: Install contracts generator dependencies
+        run: npm ci --prefix contracts
+
+      - name: Verify generated contracts are up to date
+        run: |
+          node contracts/scripts/generate-proto.js
+          git diff --exit-code -- contracts/generated/typescript
 
       - name: Compatibility check
         run: |

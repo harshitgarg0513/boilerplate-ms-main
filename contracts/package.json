@@ -12,5 +12,8 @@
   "scripts": {
     "generate": "node scripts/generate-proto.js",
     "check": "node scripts/compatibility-check.js"
+  },
+  "devDependencies": {
+    "ts-proto": "^2.2.0"
   }
 }
