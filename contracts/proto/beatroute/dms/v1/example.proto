@@ -20,7 +20,7 @@ message ExampleRequestDto {
 message Example {
   string id = 1;
   string name = 4;
-  string description = 3;
+  string description = 8;
 }
 
 message ExampleViewRequestDto {
