@@ -32,3 +32,10 @@ jobs:
           node contracts/scripts/compatibility-check.js
         env:
           CONTRACT_BASE_REF: origin/${{ github.base_ref }}
+
+      - name: Governance policy check
+        run: |
+          echo "Running contract governance policy checks..."
+          node contracts/scripts/governance-policy-check.js
+        env:
+          CONTRACT_BASE_REF: origin/${{ github.base_ref }}

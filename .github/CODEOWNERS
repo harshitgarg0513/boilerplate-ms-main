@@ -1,0 +1,5 @@
+# Contract ownership enforcement
+# Require review from repository owner for all contract changes.
+/contracts/proto/** @harshitgarg0513
+/contracts/scripts/** @harshitgarg0513
+/.github/workflows/contract-check.yml @harshitgarg0513

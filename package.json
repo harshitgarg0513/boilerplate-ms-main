@@ -30,6 +30,7 @@
     "protobuf:win": "protoc --experimental_allow_proto3_optional --plugin=./node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=./ --ts_proto_opt=nestJs=true ./proto/beatroute/dms/*.proto",
     "contracts:generate": "node contracts/scripts/generate-proto.js",
     "contracts:check": "node contracts/scripts/compatibility-check.js",
+    "contracts:policy": "node contracts/scripts/governance-policy-check.js",
     "contracts:validate": "npm run contracts:generate && npm run contracts:check"
   },
   "dependencies": {
