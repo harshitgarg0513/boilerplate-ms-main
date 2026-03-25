@@ -28,6 +28,16 @@ function ensureExecutableExists(command, args = ['--version']) {
   return check.status === 0;
 }
 
+function resolveTsProtoPluginPath() {
+  const executableName = process.platform === 'win32' ? 'protoc-gen-ts_proto.cmd' : 'protoc-gen-ts_proto';
+  const candidates = [
+    path.join(repoRoot, 'contracts', 'node_modules', '.bin', executableName),
+    path.join(repoRoot, 'node_modules', '.bin', executableName),
+  ];
+
+  return candidates.find((candidate) => fs.existsSync(candidate)) || '';
+}
+
 function run() {
   if (!fs.existsSync(protoRoot)) {
     console.error('contracts/proto directory not found.');
@@ -39,9 +49,9 @@ function run() {
     process.exit(1);
   }
 
-  const pluginPath = path.join(repoRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'protoc-gen-ts_proto.cmd' : 'protoc-gen-ts_proto');
+  const pluginPath = resolveTsProtoPluginPath();
   if (!fs.existsSync(pluginPath)) {
-    console.error('ts-proto plugin not found. Run npm install first.');
+    console.error('ts-proto plugin not found. Run npm install in contracts or project root first.');
     process.exit(1);
   }
 
