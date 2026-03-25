@@ -1,8 +1,15 @@
 {
-  "name": "@company/contracts",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@harshitgarg0513/contracts",
+  "version": "0.2.0",
+  "private": false,
   "description": "Shared gRPC contracts for microservices",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harshitgarg0513/boilerplate-ms-main.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "main": "generated/typescript/index.js",
   "types": "generated/typescript/index.d.ts",
   "files": [
@@ -11,7 +18,8 @@
   ],
   "scripts": {
     "generate": "node scripts/generate-proto.js",
-    "check": "node scripts/compatibility-check.js"
+    "check": "node scripts/compatibility-check.js",
+    "check:publish-policy": "node scripts/publish-version-policy-check.js"
   },
   "devDependencies": {
     "ts-proto": "^2.2.0"

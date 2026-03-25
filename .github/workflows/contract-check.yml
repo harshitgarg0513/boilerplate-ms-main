@@ -53,3 +53,10 @@ jobs:
         env:
           CONTRACT_BASE_REF: origin/${{ github.base_ref }}
           CONTRACT_ENFORCE_FREEZE: "true"
+
+      - name: Publish version policy check
+        run: |
+          echo "Running publish version policy checks..."
+          node contracts/scripts/publish-version-policy-check.js
+        env:
+          CONTRACT_BASE_REF: origin/${{ github.base_ref }}
