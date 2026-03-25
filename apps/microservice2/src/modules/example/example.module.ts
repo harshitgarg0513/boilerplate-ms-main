@@ -4,9 +4,10 @@ import { ExampleService } from './example.service';
 import { ExampleController } from './example.controller';
 import { TeamModule } from '../../core/team/team.module';
 import { CoreModule } from '../../core/core.module';
+import { GrpcClientModule } from '../../grpc-client/grpc-client.module';
 
 @Module({
-  imports: [],
+  imports: [GrpcClientModule],
   controllers: [ExampleController],
   providers: [ExampleService, UserIdentityService],
 })
