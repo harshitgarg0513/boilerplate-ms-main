@@ -52,3 +52,4 @@ jobs:
           node contracts/scripts/governance-policy-check.js
         env:
           CONTRACT_BASE_REF: origin/${{ github.base_ref }}
+          CONTRACT_ENFORCE_FREEZE: "true"

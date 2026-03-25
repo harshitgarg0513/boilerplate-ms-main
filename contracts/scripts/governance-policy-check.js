@@ -262,6 +262,149 @@ function pathExistsInRef(ref, treePath) {
   return out === treePath;
 }
 
+function getVersionNumber(versionDir) {
+  const match = versionDir.match(/\/v(\d+)$/);
+  return match ? Number(match[1]) : NaN;
+}
+
+function getNamespaceRoot(versionDir) {
+  return versionDir.replace(/\/v\d+$/, '');
+}
+
+function listProtoFilesInRef(ref, dirPath) {
+  const out = run(`git ls-tree -r --name-only ${ref} -- ${dirPath}`);
+  if (!out) {
+    return [];
+  }
+  return out
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.endsWith('.proto'));
+}
+
+function listProtoFilesInWorkspace(dirPath) {
+  const absoluteDir = path.join(REPO_ROOT, dirPath);
+  if (!fs.existsSync(absoluteDir)) {
+    return [];
+  }
+
+  const result = [];
+  function walk(currentDir) {
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+        continue;
+      }
+      if (entry.isFile() && fullPath.endsWith('.proto')) {
+        const relative = path.relative(REPO_ROOT, fullPath).replace(/\\/g, '/');
+        result.push(relative);
+      }
+    }
+  }
+
+  walk(absoluteDir);
+  return result;
+}
+
+function parseServiceRpcMap(content) {
+  const services = {};
+  const blocks = findBlocks(content, 'service');
+  const rpcRegex = /^\s*rpc\s+(\w+)\s*\(\s*(?:stream\s+)?[A-Za-z0-9_.]+\s*\)\s*returns\s*\(\s*(?:stream\s+)?[A-Za-z0-9_.]+\s*\)\s*(?:\{[\s\S]*?\})?\s*;?/gm;
+
+  for (const block of blocks) {
+    const rpcNames = new Set();
+    let rpcMatch = rpcRegex.exec(block.body);
+    while (rpcMatch) {
+      rpcNames.add(rpcMatch[1]);
+      rpcMatch = rpcRegex.exec(block.body);
+    }
+    services[block.name] = rpcNames;
+  }
+
+  return services;
+}
+
+function parseTopLevelNames(content) {
+  const messages = new Set(Object.keys(parseMessages(content)));
+  const enums = new Set(Object.keys(parseEnums(content)));
+  return { messages, enums };
+}
+
+function enforceNewVersionCompleteness(baseRef, newVersionDirs, errors) {
+  for (const newVersionDir of newVersionDirs) {
+    const version = getVersionNumber(newVersionDir);
+    if (!Number.isFinite(version) || version <= 1) {
+      continue;
+    }
+
+    const previousVersionDir = `${getNamespaceRoot(newVersionDir)}/v${version - 1}`;
+    if (!pathExistsInRef(baseRef, previousVersionDir)) {
+      continue;
+    }
+
+    const oldFiles = listProtoFilesInRef(baseRef, previousVersionDir);
+    const newFiles = listProtoFilesInWorkspace(newVersionDir);
+
+    const oldRelToPrev = new Set(oldFiles.map((filePath) => filePath.replace(`${previousVersionDir}/`, '')));
+    const newRelToNew = new Set(newFiles.map((filePath) => filePath.replace(`${newVersionDir}/`, '')));
+
+    for (const relPath of oldRelToPrev) {
+      if (!newRelToNew.has(relPath)) {
+        errors.push(
+          `${newVersionDir} :: missing proto file ${relPath} from previous version baseline ${previousVersionDir}`,
+        );
+      }
+    }
+
+    for (const relPath of oldRelToPrev) {
+      if (!newRelToNew.has(relPath)) {
+        continue;
+      }
+
+      const oldFilePath = `${previousVersionDir}/${relPath}`;
+      const newFilePath = `${newVersionDir}/${relPath}`;
+      const oldContent = getGitFile(baseRef, oldFilePath);
+      const newContent = getCurrentFile(newFilePath);
+      if (!oldContent || !newContent) {
+        continue;
+      }
+
+      const oldServices = parseServiceRpcMap(oldContent);
+      const newServices = parseServiceRpcMap(newContent);
+
+      for (const [serviceName, oldRpcs] of Object.entries(oldServices)) {
+        const newRpcs = newServices[serviceName];
+        if (!newRpcs) {
+          errors.push(`${newFilePath} :: missing service ${serviceName} from ${oldFilePath}`);
+          continue;
+        }
+        for (const rpcName of oldRpcs) {
+          if (!newRpcs.has(rpcName)) {
+            errors.push(`${newFilePath} :: missing rpc ${serviceName}.${rpcName} from ${oldFilePath}`);
+          }
+        }
+      }
+
+      const oldTopLevel = parseTopLevelNames(oldContent);
+      const newTopLevel = parseTopLevelNames(newContent);
+
+      for (const messageName of oldTopLevel.messages) {
+        if (!newTopLevel.messages.has(messageName)) {
+          errors.push(`${newFilePath} :: missing message ${messageName} from ${oldFilePath}`);
+        }
+      }
+
+      for (const enumName of oldTopLevel.enums) {
+        if (!newTopLevel.enums.has(enumName)) {
+          errors.push(`${newFilePath} :: missing enum ${enumName} from ${oldFilePath}`);
+        }
+      }
+    }
+  }
+}
+
 function main() {
   if (!ensureBufInstalled()) {
     console.error('buf CLI is required for contract governance policy checks.');
@@ -285,6 +428,16 @@ function main() {
   const existingVersionDirs = changedVersionDirs.filter((dir) => pathExistsInRef(baseRef, dir));
   const newVersionDirs = changedVersionDirs.filter((dir) => !pathExistsInRef(baseRef, dir));
 
+  const enforceFreeze = (process.env.CONTRACT_ENFORCE_FREEZE || '').toLowerCase() === 'true';
+  if (enforceFreeze && existingVersionDirs.length > 0) {
+    console.error('ERROR: Released contract versions are frozen and cannot be modified.');
+    for (const dir of existingVersionDirs) {
+      console.error(` - ${dir}`);
+    }
+    console.error('Policy: create a new version directory (for example v2) for any API evolution.');
+    process.exit(1);
+  }
+
   const reservedPolicyErrors = [];
   for (const filePath of changedFiles) {
     const oldContent = getGitFile(baseRef, filePath);
@@ -299,6 +452,16 @@ function main() {
   if (reservedPolicyErrors.length > 0) {
     console.error('ERROR: Reserved deletion policy violations detected.');
     for (const error of reservedPolicyErrors) {
+      console.error(` - ${error}`);
+    }
+    process.exit(1);
+  }
+
+  const completenessErrors = [];
+  enforceNewVersionCompleteness(baseRef, newVersionDirs, completenessErrors);
+  if (completenessErrors.length > 0) {
+    console.error('ERROR: New version completeness policy violations detected.');
+    for (const error of completenessErrors) {
       console.error(` - ${error}`);
     }
     process.exit(1);
