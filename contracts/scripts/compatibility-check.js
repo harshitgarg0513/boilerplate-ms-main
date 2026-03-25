@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const CONTRACT_ROOT = 'contracts/proto';
 const DEFAULT_BASES = ['origin/main', 'main', 'HEAD~1'];
+const REPO_ROOT = path.resolve(__dirname, '../..');
 
 function run(command) {
   try {
-    return execSync(command, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+    return execSync(command, {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
   } catch (error) {
     return '';
   }
@@ -42,6 +49,14 @@ function getChangedProtoFiles(baseRef) {
 
 function getGitFile(ref, filePath) {
   return run(`git show ${ref}:${filePath}`);
+}
+
+function getCurrentFile(filePath) {
+  try {
+    return fs.readFileSync(path.join(REPO_ROOT, filePath), 'utf8');
+  } catch (error) {
+    return '';
+  }
 }
 
 function parseProto(content) {
@@ -157,7 +172,7 @@ function main() {
       continue;
     }
 
-    const newContent = run(`cat ${filePath}`);
+    const newContent = getCurrentFile(filePath);
     if (!newContent) {
       continue;
     }
