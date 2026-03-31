@@ -45,6 +45,12 @@ Make sure you have the following installed:
 ## Installation
 
 ```bash
+# clone with submodules
+$ git clone --recurse-submodules git@github.com:harshitgarg0513/boilerplate-ms-main.git
+
+# if already cloned, pull contracts submodule first
+$ git submodule update --init --recursive
+
 $ npm install
 
 # intall protobuf-compiler for linux
@@ -82,8 +88,16 @@ $ npm run start:prod:apigateway
 ## Contract Governance
 
 Shared contracts are maintained under `contracts/proto` with versioned package paths.
+The `contracts` directory is an external git submodule from:
+
+`https://github.com/harshitgarg0513/contracts.git`
+
+Always initialize/update submodules before running contract or service commands.
 
 ```bash
+# pull latest contracts from submodule and install its dependencies
+$ npm run contracts:setup
+
 # generate TypeScript code from contracts/proto
 $ npm run contracts:generate
 

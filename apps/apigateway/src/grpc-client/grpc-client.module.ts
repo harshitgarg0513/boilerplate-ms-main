@@ -30,9 +30,9 @@ const DMS_V1_PACKAGE_NAME = 'beatroute.dms.v1';
           options: {
             url: configService.get<string>('GRPC_AUTH_MS_URL'),
             package: BEATROUTE_AUTH_PACKAGE_NAME,
-            protoPath: join(__dirname, '../proto/beatroute/auth/auth.proto'),
+            protoPath: join(process.cwd(), 'proto/beatroute/auth/auth.proto'),
             loader: {
-              includeDirs: [join(__dirname, '../')],
+              includeDirs: [join(process.cwd())],
             },
             channelOptions: {
               interceptors: [

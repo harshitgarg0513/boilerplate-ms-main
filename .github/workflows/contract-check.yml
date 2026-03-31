@@ -3,11 +3,8 @@ name: Contract Check
 on:
   pull_request:
     paths:
-      - 'contracts/proto/**/*.proto'
-      - 'contracts/proto/buf.yaml'
-      - 'contracts/package.json'
-      - 'contracts/package-lock.json'
-      - 'contracts/scripts/**'
+      - 'contracts'
+      - '.gitmodules'
       - 'package.json'
 
 jobs:
@@ -19,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -53,10 +51,3 @@ jobs:
         env:
           CONTRACT_BASE_REF: origin/${{ github.base_ref }}
           CONTRACT_ENFORCE_FREEZE: "true"
-
-      - name: Publish version policy check
-        run: |
-          echo "Running publish version policy checks..."
-          node contracts/scripts/publish-version-policy-check.js
-        env:
-          CONTRACT_BASE_REF: origin/${{ github.base_ref }}
