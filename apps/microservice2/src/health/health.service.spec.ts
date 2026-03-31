@@ -80,8 +80,8 @@ describe('HealthService', () => {
     jest.spyOn(healthCheckService, 'check').mockImplementation(() => {
       throw new Error('Test error');
     });
-    
-    expect(() => service.status()).toThrow(InsernalServerException);
+
+    await expect(service.status()).rejects.toBeInstanceOf(InsernalServerException);
   });
 
   it('should handle multiple database connections', async () => {
@@ -109,7 +109,7 @@ describe('HealthService', () => {
     jest.spyOn(healthCheckService, 'check').mockImplementation(() => {
       throw new Error('Test error');
     });
-    const result = await service.status();
-    expect(result).toHaveProperty('status', false);
+
+    await expect(service.status()).rejects.toBeInstanceOf(InsernalServerException);
   });
 });

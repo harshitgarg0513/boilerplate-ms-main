@@ -1,0 +1,3 @@
+# Contract ownership enforcement
+# Require review from repository owner for all contract changes.
+/contracts @harshitgarg0513
